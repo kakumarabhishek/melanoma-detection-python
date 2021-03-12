@@ -40,4 +40,4 @@ def extract(frame, hsv, colors, max_area):
 
         return np.array(new_contours)
     else:
-        return None
+        return []
