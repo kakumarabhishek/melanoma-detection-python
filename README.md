@@ -41,7 +41,7 @@ It is developed using OpenCV 3.2.0 and Python 2.7
 The usage of the program is as mentioned below
 
 ```bash
-python run_script.py [--file <filename> | --dir <dirname>]
+python run_script.py [--file <filename> | --dir <dirname>] --seg <segmentation mask data directory>
 ```
 
 ## Steps involved
