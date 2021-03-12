@@ -31,13 +31,14 @@ iterations = 3
 Tk().withdraw()
 
 
-def main(dir_path='', file_path='', process_dir=False):
+def main(dir_path='', file_path='', seg_data_dir_path='', process_dir=False):
     """
     The method that can process a single file or all files in a directory based
     on the arguments provided.
 
     :param dir_path: Directory path containing all lesion images
     :param file_path: Full file path of a single lesion image
+    :param seg_data_dir_path: Directory path containing all segmentation mask images
     :param process_dir: If true, it processes all images in a directory
     """
     global failed_files, results, save_files, iterations
@@ -56,7 +57,8 @@ def main(dir_path='', file_path='', process_dir=False):
                         and name.endswith('.jpg'):
                     filename = os.path.join(dir_path, name)
                     print "FILE: %s" % filename
-                    lesion = src.Lesion.Lesion(filename, iterations=iterations)
+                    print "SEG DIR: %s" % seg_data_dir_path
+                    lesion = src.Lesion.Lesion(filename, seg_data_dir_path, iterations=iterations)
                     lesion.extract_info(save=save_files)
                     temp = []
                     for key, value in lesion.feature_set.iteritems():
@@ -84,7 +86,8 @@ def main(dir_path='', file_path='', process_dir=False):
             file_path = filedialog.askopenfilename()
         if len(file_path) != 0:
             print "FILE: %s" % file_path
-            lesion = src.Lesion.Lesion(file_path)
+            print "SEG DIR: %s" % seg_data_dir_path
+            lesion = src.Lesion.Lesion(file_path, seg_data_dir_path)
             lesion.extract_info(save=save_files)
         else:
             print "Invalid file"
@@ -98,6 +101,7 @@ if __name__ == "__main__":
         parser = argparse.ArgumentParser()
         parser.add_argument("-d", "--dir", help="directory containing files")
         parser.add_argument("-f", "--file", help="full file path")
+        parser.add_argument("-s", "--seg", help="directory containing segmentation mask files")
         parser.add_argument("--save", help="save Images")
         parser.add_argument("-i", "--iterations", help="Iterations(0--3)")
         args = parser.parse_args()
@@ -106,16 +110,24 @@ if __name__ == "__main__":
             save_files = True
         if args.iterations:
             print "iterations:", args.iterations
-            iterations = args.iterations
+            iterations = args.iterations            
         if args.dir:
             if os.path.isdir(args.dir):
-                main(dir_path=args.dir, process_dir=True)
+                if os.path.isdir(args.seg):
+                    main(dir_path=args.dir, seg_data_dir_path=args.seg, process_dir=True)
+                else:
+                    print "Invalid segmentation mask directory"
+                    main(process_dir=True)
             else:
                 print "Invalid directory"
                 main(process_dir=True)
         elif args.file:
             if os.path.isfile(args.file):
-                main(file_path=args.file, process_dir=False)
+                if os.path.isdir(args.seg):
+                    main(file_path=args.file, seg_data_dir_path=args.seg, process_dir=False)
+                else:
+                    print "Invalid segmentation mask directory"
+                    main(process_dir=True)
             else:
                 print "Invalid file"
                 main(process_dir=False)
