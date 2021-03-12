@@ -18,12 +18,15 @@ import numpy as np
 import features
 from utilities import extract_largest_contour
 import color_contour
-try:
-    import active_contour
-except ImportError:
-    print("active contour module cannot be imported")
-    sys.exit()
+# try:
+#     import active_contour
+# except ImportError:
+#     print("active contour module cannot be imported")
+#     sys.exit()
 
+from skimage.filters import gaussian
+from skimage.segmentation import active_contour
+import matplotlib.pyplot as plt
 
 class Lesion:
     """
@@ -37,7 +40,7 @@ class Lesion:
         5. Classify the lesion based on the features extracted using an SVM
            classifier and output the result.
     """
-    def __init__(self, file_path, iterations=3):
+    def __init__(self, file_path, seg_dir_path, iterations=3):
         """
         Initiate the program by reading the lesion image from the file_path.
 
@@ -45,6 +48,8 @@ class Lesion:
         :param iterations:
         """
         self.file_path = file_path
+        self.seg_dir_path = seg_dir_path
+        self.seg_file_path = self.seg_dir_path + "/" + os.path.splitext(os.path.basename(file_path))[0] + "_segmentation.png"
         self.base_file, _ = os.path.splitext(file_path)
         self.original_image = cv2.imread(file_path)
         self.image = None
@@ -153,50 +158,74 @@ class Lesion:
             return
 
     def segment(self, iterations=9999, color=(255, 0, 0)):
-        """
-        This method performs segmentation using active contour model.
 
-        :param iterations: Number of iterations for contour evolution
-        :param color: Color of contour to be drawn on the image (scalar tuple)
-        :return: None
-        """
+        # Load the image and convert it to grayscale:
+        image = cv2.imread(self.seg_file_path)
+        gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        self.contour_mask = gray_image
+
+        # Apply cv2.threshold() to get a binary image
+        ret, thresh = cv2.threshold(gray_image, 50, 255, cv2.THRESH_BINARY)
+
+        # Find contours:
+        im, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+
+        # Draw contours:
+        cv2.drawContours(image, contours, 0, (0, 255, 0), 2)
+
+        # Calculate image moments of the detected contour
+        M = cv2.moments(contours[0])
+
+        # Print center (debugging):
+        # print("center X : '{}'".format(round(M['m10'] / M['m00'])))
+        # print("center Y : '{}'".format(round(M['m01'] / M['m00'])))
+
+        # # Show image:
+        # cv2.imshow("outline contour & centroid", image)
+
+        # # Wait until a key is pressed:
+        # cv2.waitKey(0)
+
+        # # Destroy all created windows:
+        # cv2.destroyAllWindows()
+
         # Active contour segmentation time
-        if self.isImageValid:
-            self.contour_mask = active_contour.run(self.image,
-                                                   iterations,
-                                                   self.shape,
-                                                   self.init_width,
-                                                   self.init_height,
-                                                   self.iter_list,
-                                                   self.energy_list,
-                                                   self.gaussian_list)
-            ret_val = extract_largest_contour(self.contour_mask)
-            if len(ret_val) == 0:
-                print("error")
-                return
+        # if self.isImageValid:
+        #     self.contour_mask = active_contour.run(self.image,
+        #                                            iterations,
+        #                                            self.shape,
+        #                                            self.init_width,
+        #                                            self.init_height,
+        #                                            self.iter_list,
+        #                                            self.energy_list,
+        #                                            self.gaussian_list)
+        ret_val = extract_largest_contour(self.contour_mask)
+        if len(ret_val) == 0:
+            print("error")
+            return
+        else:
+            mask_contours = ret_val[0]
+            self.max_area_pos = ret_val[1]
+            self.contour = mask_contours[self.max_area_pos]
+            cnt = len(mask_contours)
+            if cnt > 0:
+                cv2.drawContours(self.contour_image, mask_contours,
+                                 self.max_area_pos,
+                                 color,
+                                 2)
+                self.contour_binary = np.zeros(self.image.shape[:2],
+                                               dtype=np.uint8)
+                cv2.drawContours(self.contour_binary, mask_contours,
+                                 self.max_area_pos,
+                                 255,
+                                 2)
+                self.contour_area = cv2.contourArea(self.contour)
+                self.segmented_img = cv2.bitwise_and(
+                    self.original_image, self.original_image,
+                    mask=self.contour_mask)
+                self.segmented_img[self.segmented_img == 0] = 255
             else:
-                mask_contours = ret_val[0]
-                self.max_area_pos = ret_val[1]
-                self.contour = mask_contours[self.max_area_pos]
-                cnt = len(mask_contours)
-                if cnt > 0:
-                    cv2.drawContours(self.contour_image, mask_contours,
-                                     self.max_area_pos,
-                                     color,
-                                     2)
-                    self.contour_binary = np.zeros(self.image.shape[:2],
-                                                   dtype=np.uint8)
-                    cv2.drawContours(self.contour_binary, mask_contours,
-                                     self.max_area_pos,
-                                     255,
-                                     2)
-                    self.contour_area = cv2.contourArea(self.contour)
-                    self.segmented_img = cv2.bitwise_and(
-                        self.original_image, self.original_image,
-                        mask=self.contour_mask)
-                    self.segmented_img[self.segmented_img == 0] = 255
-                else:
-                    print("No contours found")
+                print("No contours found")
         return
 
     def loop_through_iterations(self):
@@ -207,10 +236,11 @@ class Lesion:
         """
         for lst in self.iter_colors:
             start = time()
-            print(lst)
             self.segment(lst[0], lst[1])
             end = time()
             self.performance_metric.append(end - start)
+
+        # self.segment()
 
     def extract_features(self):
         """
@@ -240,7 +270,6 @@ class Lesion:
         # dist = []
         self.color_contour = np.copy(self.original_image)
         for color in self.hsv_colors:
-            #            print color
             cnt = color_contour.extract(self.segmented_img, hsv,
                                         self.hsv_colors[color],
                                         self.contour_area)
@@ -316,6 +345,7 @@ class Lesion:
         """
         Stores the features and the result in json format.
         """
+        print(self.base_file + ".json")
         target = open(self.base_file + ".json", 'w')
         target.write(json.dumps(self.feature_set,
                                 sort_keys=True, indent=2) + '\n')
@@ -331,6 +361,8 @@ class Lesion:
          (default: False)
         """
         # Preprocessing time
+        save = True
+
         start = time()
         if self.preprocess():
             end = time()
@@ -355,9 +387,9 @@ class Lesion:
             # Total feature extraction time
             self.performance_metric.append(self.performance_metric[-1] +
                                            self.performance_metric[-2])
-            self.classify_lesion()
+            # self.classify_lesion()
             if save and len(self.feature_set) != 0:
-                self.save_images()
+                # self.save_images()
                 self.save_result()
         else:
             print("Invalid image")
