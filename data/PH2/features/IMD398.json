@@ -1,0 +1,44 @@
+{
+  "A1": 0.28, 
+  "A2": 0.14, 
+  "A_B": 0, 
+  "A_BG": 0, 
+  "A_DB": 0.142, 
+  "A_LB": 0.075, 
+  "A_W": 0, 
+  "B": 1.42, 
+  "C": 2, 
+  "D1": 10, 
+  "D2": 8, 
+  "area": 332951, 
+  "centroid": [
+    372, 
+    297
+  ], 
+  "colors_attr": [
+    {
+      "centroids": [
+        [
+          383, 
+          295
+        ], 
+        [
+          447, 
+          230
+        ]
+      ], 
+      "color": "Light Brown"
+    }, 
+    {
+      "centroids": [
+        [
+          452, 
+          230
+        ]
+      ], 
+      "color": "Dark Brown"
+    }
+  ], 
+  "image": "data/PH2/lesions/IMD398.jpg", 
+  "perimeter": 2440
+}

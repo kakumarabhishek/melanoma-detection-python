@@ -1,0 +1,53 @@
+{
+  "A1": 0.06, 
+  "A2": 0.02, 
+  "A_B": 0.0998, 
+  "A_BG": 0, 
+  "A_DB": 0.1748, 
+  "A_LB": 0.5543, 
+  "A_W": 0, 
+  "B": 1.17, 
+  "C": 3, 
+  "D1": 8, 
+  "D2": 8, 
+  "area": 421126, 
+  "centroid": [
+    377, 
+    288
+  ], 
+  "colors_attr": [
+    {
+      "centroids": [
+        [
+          135, 
+          508
+        ]
+      ], 
+      "color": "Light Brown"
+    }, 
+    {
+      "centroids": [
+        [
+          339, 
+          243
+        ]
+      ], 
+      "color": "Black"
+    }, 
+    {
+      "centroids": [
+        [
+          396, 
+          275
+        ], 
+        [
+          347, 
+          507
+        ]
+      ], 
+      "color": "Dark Brown"
+    }
+  ], 
+  "image": "data/PH2/lesions/IMD411.jpg", 
+  "perimeter": 2486
+}

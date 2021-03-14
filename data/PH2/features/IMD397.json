@@ -1,0 +1,44 @@
+{
+  "A1": 0.39, 
+  "A2": 0.37, 
+  "A_B": 0, 
+  "A_BG": 0, 
+  "A_DB": 0.1116, 
+  "A_LB": 0.0511, 
+  "A_W": 0, 
+  "B": 2.05, 
+  "C": 2, 
+  "D1": 9, 
+  "D2": 6, 
+  "area": 154465, 
+  "centroid": [
+    412, 
+    299
+  ], 
+  "colors_attr": [
+    {
+      "centroids": [
+        [
+          413, 
+          311
+        ], 
+        [
+          388, 
+          347
+        ]
+      ], 
+      "color": "Light Brown"
+    }, 
+    {
+      "centroids": [
+        [
+          355, 
+          340
+        ]
+      ], 
+      "color": "Dark Brown"
+    }
+  ], 
+  "image": "data/PH2/lesions/IMD397.jpg", 
+  "perimeter": 1992
+}

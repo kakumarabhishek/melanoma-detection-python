@@ -1,0 +1,48 @@
+{
+  "A1": 0.3, 
+  "A2": 0.22, 
+  "A_B": 0, 
+  "A_BG": 0, 
+  "A_DB": 0.0498, 
+  "A_LB": 0.048, 
+  "A_W": 0, 
+  "B": 1.48, 
+  "C": 2, 
+  "D1": 5, 
+  "D2": 3, 
+  "area": 49750, 
+  "centroid": [
+    243, 
+    232
+  ], 
+  "colors_attr": [
+    {
+      "centroids": [
+        [
+          287, 
+          348
+        ], 
+        [
+          185, 
+          283
+        ], 
+        [
+          249, 
+          112
+        ]
+      ], 
+      "color": "Light Brown"
+    }, 
+    {
+      "centroids": [
+        [
+          239, 
+          216
+        ]
+      ], 
+      "color": "Dark Brown"
+    }
+  ], 
+  "image": "data/PH2/lesions/IMD251.jpg", 
+  "perimeter": 963
+}

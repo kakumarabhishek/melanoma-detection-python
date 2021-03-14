@@ -1,0 +1,44 @@
+{
+  "A1": 0.19, 
+  "A2": 0.2, 
+  "A_B": 0, 
+  "A_BG": 0, 
+  "A_DB": 0.2674, 
+  "A_LB": 0.1177, 
+  "A_W": 0, 
+  "B": 1.68, 
+  "C": 2, 
+  "D1": 6, 
+  "D2": 5, 
+  "area": 120053, 
+  "centroid": [
+    284, 
+    276
+  ], 
+  "colors_attr": [
+    {
+      "centroids": [
+        [
+          284, 
+          276
+        ], 
+        [
+          323, 
+          176
+        ]
+      ], 
+      "color": "Light Brown"
+    }, 
+    {
+      "centroids": [
+        [
+          364, 
+          184
+        ]
+      ], 
+      "color": "Dark Brown"
+    }
+  ], 
+  "image": "data/PH2/lesions/IMD022.jpg", 
+  "perimeter": 1592
+}

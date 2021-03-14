@@ -1,0 +1,44 @@
+{
+  "A1": 0.12, 
+  "A2": 0.24, 
+  "A_B": 0, 
+  "A_BG": 0, 
+  "A_DB": 0.3074, 
+  "A_LB": 0.1484, 
+  "A_W": 0, 
+  "B": 1.35, 
+  "C": 2, 
+  "D1": 8, 
+  "D2": 7, 
+  "area": 213409, 
+  "centroid": [
+    307, 
+    269
+  ], 
+  "colors_attr": [
+    {
+      "centroids": [
+        [
+          307, 
+          269
+        ], 
+        [
+          338, 
+          106
+        ]
+      ], 
+      "color": "Light Brown"
+    }, 
+    {
+      "centroids": [
+        [
+          338, 
+          100
+        ]
+      ], 
+      "color": "Dark Brown"
+    }
+  ], 
+  "image": "data/PH2/lesions/IMD135.jpg", 
+  "perimeter": 1901
+}

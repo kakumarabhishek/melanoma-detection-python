@@ -1,0 +1,44 @@
+{
+  "A1": 0.25, 
+  "A2": 0.24, 
+  "A_B": 0, 
+  "A_BG": 0, 
+  "A_DB": 0.116, 
+  "A_LB": 0.0557, 
+  "A_W": 0, 
+  "B": 1.61, 
+  "C": 2, 
+  "D1": 7, 
+  "D2": 5, 
+  "area": 114197, 
+  "centroid": [
+    423, 
+    251
+  ], 
+  "colors_attr": [
+    {
+      "centroids": [
+        [
+          423, 
+          251
+        ], 
+        [
+          474, 
+          236
+        ]
+      ], 
+      "color": "Light Brown"
+    }, 
+    {
+      "centroids": [
+        [
+          477, 
+          239
+        ]
+      ], 
+      "color": "Dark Brown"
+    }
+  ], 
+  "image": "data/PH2/lesions/IMD157.jpg", 
+  "perimeter": 1521
+}

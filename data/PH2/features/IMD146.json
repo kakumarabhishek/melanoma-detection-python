@@ -1,0 +1,44 @@
+{
+  "A1": 0.18, 
+  "A2": 0.12, 
+  "A_B": 0, 
+  "A_BG": 0, 
+  "A_DB": 0.0723, 
+  "A_LB": 0.0507, 
+  "A_W": 0, 
+  "B": 1.43, 
+  "C": 2, 
+  "D1": 5, 
+  "D2": 3, 
+  "area": 66308, 
+  "centroid": [
+    404, 
+    160
+  ], 
+  "colors_attr": [
+    {
+      "centroids": [
+        [
+          403, 
+          171
+        ], 
+        [
+          402, 
+          187
+        ]
+      ], 
+      "color": "Light Brown"
+    }, 
+    {
+      "centroids": [
+        [
+          401, 
+          187
+        ]
+      ], 
+      "color": "Dark Brown"
+    }
+  ], 
+  "image": "data/PH2/lesions/IMD146.jpg", 
+  "perimeter": 1091
+}

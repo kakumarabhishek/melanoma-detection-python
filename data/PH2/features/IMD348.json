@@ -1,0 +1,44 @@
+{
+  "A1": 0.28, 
+  "A2": 0.18, 
+  "A_B": 0.1091, 
+  "A_BG": 0, 
+  "A_DB": 0.1194, 
+  "A_LB": 0, 
+  "A_W": 0, 
+  "B": 1.88, 
+  "C": 2, 
+  "D1": 8, 
+  "D2": 8, 
+  "area": 329541, 
+  "centroid": [
+    412, 
+    258
+  ], 
+  "colors_attr": [
+    {
+      "centroids": [
+        [
+          383, 
+          202
+        ]
+      ], 
+      "color": "Black"
+    }, 
+    {
+      "centroids": [
+        [
+          411, 
+          249
+        ], 
+        [
+          364, 
+          138
+        ]
+      ], 
+      "color": "Dark Brown"
+    }
+  ], 
+  "image": "data/PH2/lesions/IMD348.jpg", 
+  "perimeter": 2792
+}

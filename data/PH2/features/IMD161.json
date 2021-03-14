@@ -1,0 +1,44 @@
+{
+  "A1": 0.12, 
+  "A2": 0.15, 
+  "A_B": 0, 
+  "A_BG": 0, 
+  "A_DB": 0.3085, 
+  "A_LB": 0.1474, 
+  "A_W": 0, 
+  "B": 1.56, 
+  "C": 2, 
+  "D1": 10, 
+  "D2": 6, 
+  "area": 223367, 
+  "centroid": [
+    380, 
+    315
+  ], 
+  "colors_attr": [
+    {
+      "centroids": [
+        [
+          381, 
+          311
+        ], 
+        [
+          538, 
+          181
+        ]
+      ], 
+      "color": "Light Brown"
+    }, 
+    {
+      "centroids": [
+        [
+          544, 
+          168
+        ]
+      ], 
+      "color": "Dark Brown"
+    }
+  ], 
+  "image": "data/PH2/lesions/IMD161.jpg", 
+  "perimeter": 2095
+}

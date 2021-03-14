@@ -1,0 +1,44 @@
+{
+  "A1": 0.26, 
+  "A2": 0.25, 
+  "A_B": 0, 
+  "A_BG": 0, 
+  "A_DB": 0.2135, 
+  "A_LB": 0.0917, 
+  "A_W": 0, 
+  "B": 1.83, 
+  "C": 2, 
+  "D1": 8, 
+  "D2": 6, 
+  "area": 194564, 
+  "centroid": [
+    322, 
+    279
+  ], 
+  "colors_attr": [
+    {
+      "centroids": [
+        [
+          322, 
+          279
+        ], 
+        [
+          356, 
+          380
+        ]
+      ], 
+      "color": "Light Brown"
+    }, 
+    {
+      "centroids": [
+        [
+          326, 
+          403
+        ]
+      ], 
+      "color": "Dark Brown"
+    }
+  ], 
+  "image": "data/PH2/lesions/IMD153.jpg", 
+  "perimeter": 2112
+}

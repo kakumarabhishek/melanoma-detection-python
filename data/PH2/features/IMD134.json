@@ -1,0 +1,48 @@
+{
+  "A1": 0.29, 
+  "A2": 0.2, 
+  "A_B": 0, 
+  "A_BG": 0, 
+  "A_DB": 0.1029, 
+  "A_LB": 0.0749, 
+  "A_W": 0, 
+  "B": 1.44, 
+  "C": 2, 
+  "D1": 5, 
+  "D2": 3, 
+  "area": 57608, 
+  "centroid": [
+    402, 
+    277
+  ], 
+  "colors_attr": [
+    {
+      "centroids": [
+        [
+          400, 
+          270
+        ], 
+        [
+          425, 
+          235
+        ]
+      ], 
+      "color": "Light Brown"
+    }, 
+    {
+      "centroids": [
+        [
+          456, 
+          316
+        ], 
+        [
+          410, 
+          199
+        ]
+      ], 
+      "color": "Dark Brown"
+    }
+  ], 
+  "image": "data/PH2/lesions/IMD134.jpg", 
+  "perimeter": 1019
+}

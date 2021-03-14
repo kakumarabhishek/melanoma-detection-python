@@ -1,0 +1,61 @@
+{
+  "A1": 0.21, 
+  "A2": 0.14, 
+  "A_B": 0.0712, 
+  "A_BG": 0, 
+  "A_DB": 0.061, 
+  "A_LB": 0.1028, 
+  "A_W": 0, 
+  "B": 1.55, 
+  "C": 3, 
+  "D1": 5, 
+  "D2": 4, 
+  "area": 79714, 
+  "centroid": [
+    427, 
+    284
+  ], 
+  "colors_attr": [
+    {
+      "centroids": [
+        [
+          464, 
+          288
+        ]
+      ], 
+      "color": "Light Brown"
+    }, 
+    {
+      "centroids": [
+        [
+          415, 
+          337
+        ], 
+        [
+          390, 
+          247
+        ]
+      ], 
+      "color": "Black"
+    }, 
+    {
+      "centroids": [
+        [
+          406, 
+          282
+        ], 
+        [
+          379, 
+          303
+        ], 
+        [
+          436, 
+          239
+        ]
+      ], 
+      "color": "Dark Brown"
+    }
+  ], 
+  "image": "data/PH2/lesions/IMD429.jpg", 
+  "perimeter": 1244
+}

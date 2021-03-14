@@ -1,0 +1,44 @@
+{
+  "A1": 0.22, 
+  "A2": 0.43, 
+  "A_B": 0, 
+  "A_BG": 0, 
+  "A_DB": 0.0589, 
+  "A_LB": 0.0274, 
+  "A_W": 0, 
+  "B": 1.46, 
+  "C": 2, 
+  "D1": 5, 
+  "D2": 3, 
+  "area": 53820, 
+  "centroid": [
+    373, 
+    318
+  ], 
+  "colors_attr": [
+    {
+      "centroids": [
+        [
+          373, 
+          318
+        ], 
+        [
+          369, 
+          336
+        ]
+      ], 
+      "color": "Light Brown"
+    }, 
+    {
+      "centroids": [
+        [
+          360, 
+          333
+        ]
+      ], 
+      "color": "Dark Brown"
+    }
+  ], 
+  "image": "data/PH2/lesions/IMD384.jpg", 
+  "perimeter": 993
+}

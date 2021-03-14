@@ -1,0 +1,44 @@
+{
+  "A1": 0.2, 
+  "A2": 0.17, 
+  "A_B": 0, 
+  "A_BG": 0, 
+  "A_DB": 0.0819, 
+  "A_LB": 0.0412, 
+  "A_W": 0, 
+  "B": 1.55, 
+  "C": 2, 
+  "D1": 4, 
+  "D2": 4, 
+  "area": 52820, 
+  "centroid": [
+    377, 
+    313
+  ], 
+  "colors_attr": [
+    {
+      "centroids": [
+        [
+          377, 
+          312
+        ], 
+        [
+          362, 
+          295
+        ]
+      ], 
+      "color": "Light Brown"
+    }, 
+    {
+      "centroids": [
+        [
+          361, 
+          295
+        ]
+      ], 
+      "color": "Dark Brown"
+    }
+  ], 
+  "image": "data/PH2/lesions/IMD364.jpg", 
+  "perimeter": 1015
+}
