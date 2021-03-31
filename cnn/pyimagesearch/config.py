@@ -1,7 +1,7 @@
 # import the necessary packages
 import os
 # initialize the path to the *original* input directory of images
-ORIG_INPUT_DATASET = "data"
+ORIG_INPUT_DATASET = "~/scratch/ISIC/ISIC-2017_Training_Data/"
 # initialize the base path to the *new* directory that will contain
 # our images after computing the training and testing split
 BASE_PATH = "data"
@@ -22,6 +22,6 @@ BATCH_SIZE = 32
 # where the extracted features (in CSV file format) will be stored
 LE_PATH = os.path.sep.join(["output", "le.cpickle"])
 BASE_CSV_PATH = "output"
-BASE_FEATURE_PATH = "lesionFeatures"
+BASE_FEATURE_PATH = "../results"
 # set the path to the serialized model after training
 MODEL_PATH = os.path.sep.join(["output", "model.cpickle"])
