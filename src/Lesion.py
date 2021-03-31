@@ -346,7 +346,8 @@ class Lesion:
         Stores the features and the result in json format.
         """
         print(self.base_file + ".json")
-        target = open(self.base_file + ".json", 'w')
+        # target = open(self.base_file + ".json", 'w')
+        target = open("results/" + os.path.basename(self.base_file) + ".json", 'w')
         target.write(json.dumps(self.feature_set,
                                 sort_keys=True, indent=2) + '\n')
         target.close()

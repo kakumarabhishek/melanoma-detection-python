@@ -49,7 +49,7 @@ def main(dir_path='', file_path='', seg_data_dir_path='', process_dir=False):
             exit()
 
         if len(dir_path) != 0:
-            target = open(os.path.join(dir_path, "results.json"), 'w')
+            target = open(os.path.join("results/", "results.json"), 'w')
             header = []
             notSetHeader = True
             for name in os.listdir(dir_path):
