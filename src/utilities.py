@@ -79,8 +79,8 @@ def draw_closing_lines(img, contours):
         rows, cols = img.shape[:2]
         if len(indexes) == 0:
             continue
-        print "Found possible breaks at : %s locations" % len(indexes)
-        print "Points are : ", cont[indexes, 0]
+        print ("Found possible breaks at : %s locations" % len(indexes))
+        print ("Points are : ", cont[indexes, 0])
         for i in xrange(len(indexes)):
             pt = cont[indexes[i], 0]
             if 0 <= pt[0] < 10 or 0 <= cols - pt[0] <= 10:
@@ -88,8 +88,8 @@ def draw_closing_lines(img, contours):
             elif 0 <= pt[1] < 10 or 0 <= rows - pt[1] <= 10:
                 pts.append(tuple(pt))
 
-    print "Found breaks at : %s locations" % len(pts)
-    print "Points are : ", pts
+    print ("Found breaks at : %s locations" % len(pts))
+    print ("Points are : ", pts)
     pts = sorted(pts)
     if len(pts) == 0:
         return
@@ -113,7 +113,7 @@ def draw_closing_lines(img, contours):
             cv2.line(img, pts[0], tuple(pt3), (255, 255, 255))
             cv2.line(img, tuple(pt3), pts[1], (255, 255, 255))
     elif len(pts) > 2:
-        print "Manual check required"
+        print ("Manual check required")
         paired_pts = []
         #        pts = sorted(pts)
         for pt in pts:
@@ -126,7 +126,7 @@ def draw_closing_lines(img, contours):
                 pt2 = temp_pts[pos]
                 paired_pts.append(pt)
                 paired_pts.append(pt2)
-                print "pairs formed:", pt, pt2
+                print ("pairs formed:", pt, pt2)
                 cv2.line(img, pt, pt2, (255, 255, 255))
 
 

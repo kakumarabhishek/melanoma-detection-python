@@ -11,8 +11,8 @@ Created on Wed Jun 07 10:54:17 2017
 # Built-in imports
 import sys
 import argparse
-from Tkinter import Tk
-import tkFileDialog as filedialog
+# from Tkinter import Tk
+# import tkFileDialog as filedialog
 import os
 import json
 
@@ -28,7 +28,7 @@ failed_files = []
 save_files = False
 performance_metrics = []
 iterations = 3
-Tk().withdraw()
+# Tk().withdraw()
 
 
 def main(dir_path='', file_path='', seg_data_dir_path='', process_dir=False):
@@ -44,7 +44,9 @@ def main(dir_path='', file_path='', seg_data_dir_path='', process_dir=False):
     global failed_files, results, save_files, iterations
     if process_dir:
         if len(dir_path) == 0:
-            dir_path = filedialog.askdirectory()
+            # dir_path = filedialog.askdirectory() 
+            print ("No dir_path given. Exiting now")
+            exit()
 
         if len(dir_path) != 0:
             target = open(os.path.join(dir_path, "results.json"), 'w')
@@ -56,8 +58,8 @@ def main(dir_path='', file_path='', seg_data_dir_path='', process_dir=False):
                         and "Label" not in name \
                         and name.endswith('.jpg'):
                     filename = os.path.join(dir_path, name)
-                    print "FILE: %s" % filename
-                    print "SEG DIR: %s" % seg_data_dir_path
+                    print ("FILE: %s" % filename)
+                    print ("SEG DIR: %s" % seg_data_dir_path)
                     lesion = src.Lesion.Lesion(filename, seg_data_dir_path, iterations=iterations)
                     lesion.extract_info(save=save_files)
                     temp = []
@@ -80,22 +82,24 @@ def main(dir_path='', file_path='', seg_data_dir_path='', process_dir=False):
                        np.array(performance_metrics) * 1000,
                        delimiter=',')
         else:
-            print "Invalid directory"
+            print ("Invalid directory")
     else:
         if len(file_path) == 0:
             file_path = filedialog.askopenfilename()
+            print ("No dir_path given. Exiting now")
+            exit()
         if len(file_path) != 0:
-            print "FILE: %s" % file_path
-            print "SEG DIR: %s" % seg_data_dir_path
+            print ("FILE: %s" % file_path)
+            print ("SEG DIR: %s" % seg_data_dir_path)
             lesion = src.Lesion.Lesion(file_path, seg_data_dir_path)
             lesion.extract_info(save=save_files)
         else:
-            print "Invalid file"
+            print ("Invalid file")
 
 
 if __name__ == "__main__":
     if len(sys.argv) == 1:
-        print "no arguments passed"
+        print ("no arguments passed")
         main(process_dir=False)
     else:
         parser = argparse.ArgumentParser()
@@ -109,25 +113,25 @@ if __name__ == "__main__":
         if args.save:
             save_files = True
         if args.iterations:
-            print "iterations:", args.iterations
+            print ("iterations:", args.iterations)
             iterations = args.iterations            
         if args.dir:
             if os.path.isdir(args.dir):
                 if os.path.isdir(args.seg):
                     main(dir_path=args.dir, seg_data_dir_path=args.seg, process_dir=True)
                 else:
-                    print "Invalid segmentation mask directory"
+                    print ("Invalid segmentation mask directory")
                     main(process_dir=True)
             else:
-                print "Invalid directory"
+                print ("Invalid directory")
                 main(process_dir=True)
         elif args.file:
             if os.path.isfile(args.file):
                 if os.path.isdir(args.seg):
                     main(file_path=args.file, seg_data_dir_path=args.seg, process_dir=False)
                 else:
-                    print "Invalid segmentation mask directory"
+                    print ("Invalid segmentation mask directory")
                     main(process_dir=True)
             else:
-                print "Invalid file"
+                print ("Invalid file")
                 main(process_dir=False)

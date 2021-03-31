@@ -15,9 +15,9 @@ import cv2
 import numpy as np
 
 # custom imports
-import features
-from utilities import extract_largest_contour
-import color_contour
+from . import features
+from .utilities import extract_largest_contour
+from . import color_contour
 # try:
 #     import active_contour
 # except ImportError:
