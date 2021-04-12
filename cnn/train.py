@@ -8,6 +8,7 @@ import os
 import json
 from sklearn.model_selection import train_test_split
 import random
+from sklearn.decomposition import PCA
 
 # derive the paths to the CSV file containing CNN feature data
 csvPath = os.path.sep.join([config.BASE_CSV_PATH,
@@ -40,7 +41,15 @@ print("[INFO] loading data...")
 # (trainX, trainY) = load_data_split(trainingPath)
 # (testX, testY) = load_data_split(testingPath)
 
-trainX, testX, trainY, testY = train_test_split(data, labels, test_size=0.33, random_state=8)
+# print(np.shape(data))
+# exit()
+pca = PCA(n_components=48)
+pca.fit(data)
+newData = pca.transform(data)
+# print(newData.shape)
+# exit()
+
+trainX, testX, trainY, testY = train_test_split(newData, labels, test_size=0.33, random_state=8)
 # load the label encoder from disk
 # le = pickle.loads(open(config.LE_PATH, "rb").read())
 from sklearn.naive_bayes import GaussianNB
@@ -48,15 +57,18 @@ from sklearn.naive_bayes import GaussianNB
 gnb = GaussianNB()
 predY = gnb.fit(trainX, trainY).predict(testX)
 print("Number of mislabeled points out of a total %d points : %d" % (np.shape(testX)[0], (testY != predY).sum()))
+for x in range(75):
+    print("pred:" + str(predY[x]) + "  test:" + str(testY[x]) + "\n")
+
 # print(testY)
 # print(predY)
 
-import matplotlib.pyplot as plt
-x_coordinates = list(range(0, 84))
+# import matplotlib.pyplot as plt
+# x_coordinates = list(range(0, 84))
 
-plt.plot(x_coordinates, testY, 'o', color='red')
-plt.plot(x_coordinates, predY, 'o', color='blue')
-plt.show()
+# plt.plot(x_coordinates, testY, 'o', color='red')
+# plt.plot(x_coordinates, predY, 'o', color='blue')
+# plt.show()
 
 # train the model
 # print("[INFO] training model...")
