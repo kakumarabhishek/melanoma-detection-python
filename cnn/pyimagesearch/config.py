@@ -4,7 +4,7 @@ import os
 ORIG_INPUT_DATASET = "/home/hliaqat/scratch/ISIC/"
 # initialize the base path to the *new* directory that will contain
 # our images after computing the training and testing split
-BASE_PATH = "data"
+BASE_PATH = "/home/hliaqat/scratch/ISIC/"
 
 # define the names of the training, testing, and validation
 # directories

@@ -27,7 +27,7 @@ imagePaths = list(paths.list_images(p))
 # randomly shuffle the image paths and then extract the class
 # labels from the file paths
 random.shuffle(imagePaths)
-labels = [p.split(os.path.sep)[2] for p in imagePaths]
+labels = [p.split(os.path.sep)[6] for p in imagePaths]
 
 # print(labels)
 # exit()
