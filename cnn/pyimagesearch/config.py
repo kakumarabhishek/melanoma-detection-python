@@ -21,7 +21,7 @@ BATCH_SIZE = 32
 # initialize the label encoder file path and the output directory to
 # where the extracted features (in CSV file format) will be stored
 LE_PATH = os.path.sep.join(["output", "le.cpickle"])
-BASE_CSV_PATH = "output"
+BASE_CSV_PATH = "classificationOutput"
 BASE_FEATURE_PATH = "../results"
 # set the path to the serialized model after training
 MODEL_PATH = os.path.sep.join(["output", "model.cpickle"])
