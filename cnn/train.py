@@ -1,89 +1,116 @@
+# set the matplotlib backend so figures can be saved in the background
+# import matplotlib
+# matplotlib.use("Agg")
 # import the necessary packages
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import classification_report
-from pyimagesearch import config
-import numpy as np
-import pickle
-import os
-import json
+from sklearn.preprocessing import LabelBinarizer
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.optimizers import SGD
+from imutils import paths
+# import matplotlib.pyplot as plt
+import numpy as np
+import argparse
 import random
-from sklearn.decomposition import PCA
+import pickle
+import cv2
+import os
 
-# derive the paths to the CSV file containing CNN feature data
-csvPath = os.path.sep.join([config.BASE_CSV_PATH,
-	"{}.csv".format(config.ALL_DATA_PATH)])
+import json
 
+# construct the argument parser and parse the arguments
+ap = argparse.ArgumentParser()
+ap.add_argument("-d", "--dataset", required=True,
+	help="path to input dataset of images")
+ap.add_argument("-m", "--model", required=True,
+	help="path to output trained model")
+ap.add_argument("-l", "--label-bin", required=True,
+	help="path to output label binarizer")
+# ap.add_argument("-p", "--plot", required=True,
+# 	help="path to output accuracy/loss plot")
+args = vars(ap.parse_args())
+
+# initialize the data and labels
+print("[INFO] loading images...")
 data = []
 labels = []
+# grab the image paths and randomly shuffle them
+imagePaths = list(paths.list_images(args["dataset"]))
+random.seed(42)
+random.shuffle(imagePaths)
+# loop over the input images
 
-for row in open(csvPath):
-	row = row.strip().split(",")
-	imagePath = row[0]
+i = 1
+for imagePath in imagePaths:
+	print("[INFO] image " + str(i) + " (1/3) ...")
+	# load the image, resize the image to be 32x32 pixels (ignoring
+	# aspect ratio), flatten the image into 32x32x3=3072 pixel image
+	# into a list, and store the image in the data list
+	image = cv2.imread(imagePath)
+	image = cv2.resize(image, (32, 32)).flatten()
+	data.append(image)
+	# extract the class label from the image path and update the
+	# labels list
+	imageName = imagePath.split(os.path.sep)[6]
+	print("[INFO] image " + str(i) + " (2/3) ...")
+	# print(imagePath)
+	# print(imagePath.split(os.path.sep)[5])
+	# exit()
 
 	# derive path to json file containing the ground truth features to predict
-	file_of_feature_to_predict = os.path.sep.join([config.BASE_FEATURE_PATH,
-	"{}.json".format(os.path.splitext(imagePath)[0])])
+	file_of_feature_to_predict = os.path.sep.join(["../results",
+												   "{}.json".format(os.path.splitext(imageName)[0])])
 
 	with open(file_of_feature_to_predict) as f:
 		label_data = json.load(f)
-  	# derive the D1 ground truth feature and add it to label list
+	# derive the D1 ground truth feature and add it to label list
 	labels.append(label_data['D1'])
-	# random.shuffle(labels)
-	# print(feature_data['D1'])
-	# exit()
+	print("[INFO] image " + str(i) + " (3/3) ...")
+	i = i +1
 
-	features = np.array(row[1:], dtype="float")
-	data.append(features)
-
-# load the data from disk
-print("[INFO] loading data...")
-# (trainX, trainY) = load_data_split(trainingPath)
-# (testX, testY) = load_data_split(testingPath)
-
-# print(np.shape(data))
+	# print("imageName:" + imageName + "  label:" + str(label_data['D1']))
+# print(sorted(set(labels)))
 # exit()
-pca = PCA(n_components=48)
-pca.fit(data)
-newData = pca.transform(data)
-# print(newData.shape)
-# exit()
+data = np.array(data, dtype="float") / 255.0
+labels = np.array(labels)
 
-trainX, testX, trainY, testY = train_test_split(newData, labels, test_size=0.33, random_state=8)
-# load the label encoder from disk
-# le = pickle.loads(open(config.LE_PATH, "rb").read())
-from sklearn.naive_bayes import GaussianNB
+# partition the data into training and testing splits using 75% of
+# the data for training and the remaining 25% for testing
+(trainX, testX, trainY, testY) = train_test_split(data,
+	labels, test_size=0.25, random_state=42)
 
-gnb = GaussianNB()
-predY = gnb.fit(trainX, trainY).predict(testX)
-print("Number of mislabeled points out of a total %d points : %d" % (np.shape(testX)[0], (testY != predY).sum()))
+# convert the labels from integers to vectors (for 2-class, binary
+# classification you should use Keras' to_categorical function
+# instead as the scikit-learn's LabelBinarizer will not return a
+# vector)
+lb = LabelBinarizer()
+trainY = lb.fit_transform(trainY)
+testY = lb.transform(testY)
 
-from sklearn.metrics import mean_absolute_error
-print("Mean absolute error : %d" % (mean_absolute_error(testY, predY)))
-# for x in range(75):
-#     print("pred:" + str(predY[x]) + "  test:" + str(testY[x]) + "\n")
+# define the 3072-1024-512-3 architecture using Keras
+model = Sequential()
+model.add(Dense(1024, input_shape=(3072,), activation="sigmoid"))
+model.add(Dense(512, activation="sigmoid"))
+model.add(Dense(len(lb.classes_), activation="softmax"))
 
-# print(testY)
-# print(predY)
+# initialize our initial learning rate and # of epochs to train for
+INIT_LR = 0.01
+EPOCHS = 80
+# compile the model using SGD as our optimizer and categorical
+# cross-entropy loss (you'll want to use binary_crossentropy
+# for 2-class classification)
+print("[INFO] training network...")
+opt = SGD(lr=INIT_LR)
+model.compile(loss="categorical_crossentropy", optimizer=opt,
+	metrics=["accuracy"])
 
-# import matplotlib.pyplot as plt
-# x_coordinates = list(range(0, 84))
+# train the neural network
+H = model.fit(x=trainX, y=trainY, validation_data=(testX, testY),
+	epochs=EPOCHS, batch_size=32)
 
-# plt.plot(x_coordinates, testY, 'o', color='red')
-# plt.plot(x_coordinates, predY, 'o', color='blue')
-# plt.show()
-
-# train the model
-# print("[INFO] training model...")
-# model = LogisticRegression(solver="lbfgs", multi_class="auto",
-# 	max_iter=150)
-# model.fit(trainX, trainY)
-# # evaluate the model
-# print("[INFO] evaluating...")
-# preds = model.predict(testX)
-# print(classification_report(testY, preds))
-# # serialize the model to disk
-# print("[INFO] saving model...")
-# f = open(config.MODEL_PATH, "wb")
-# f.write(pickle.dumps(model))
-# f.close()
+# evaluate the network
+print("[INFO] evaluating network...")
+predictions = model.predict(x=testX, batch_size=32)
+print(classification_report(testY.argmax(axis=1),
+	predictions.argmax(axis=1)))
