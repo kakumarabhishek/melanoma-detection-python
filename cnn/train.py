@@ -57,8 +57,11 @@ from sklearn.naive_bayes import GaussianNB
 gnb = GaussianNB()
 predY = gnb.fit(trainX, trainY).predict(testX)
 print("Number of mislabeled points out of a total %d points : %d" % (np.shape(testX)[0], (testY != predY).sum()))
-for x in range(75):
-    print("pred:" + str(predY[x]) + "  test:" + str(testY[x]) + "\n")
+
+from sklearn.metrics import mean_absolute_error
+print("Mean absolute error : %d" % (mean_absolute_error(testY, predY)))
+# for x in range(75):
+#     print("pred:" + str(predY[x]) + "  test:" + str(testY[x]) + "\n")
 
 # print(testY)
 # print(predY)
