@@ -18,6 +18,62 @@ import cv2
 import os
 
 import json
+from numpy import savetxt
+from numpy import loadtxt
+
+# initialize the data and labels
+def dataLoad(arguments):
+	print("[INFO] loading images...")
+	data = []
+	labels = []
+	# grab the image paths and randomly shuffle them
+	imagePaths = list(paths.list_images(arguments["dataset"]))
+	random.seed(42)
+	random.shuffle(imagePaths)
+	# loop over the input images
+
+	i = 1
+	for imagePath in imagePaths:
+		# extract the class label from the image path and update the
+		# labels list
+		print("[INFO] image " + str(i) + " (1/3) ...")
+		imageName = imagePath.split(os.path.sep)[6]
+
+		# print(imagePath)
+		# print(imagePath.split(os.path.sep)[5])
+		# exit()
+
+		# derive path to json file containing the ground truth features to predict
+		print("[INFO] image " + str(i) + " (2/3) ...")
+		file_of_feature_to_predict = os.path.sep.join(["../results",
+													   "{}.json".format(os.path.splitext(imageName)[0])])
+
+		with open(file_of_feature_to_predict) as f:
+			label_data = json.load(f)
+		# derive the D1 ground truth feature and add it to label list
+		d1 = label_data['D1']
+		if (int(d1) >= 24):
+			print("[INFO] image " + str(i) + " skipping ...")
+			continue
+		labels.append(d1)
+
+		print("[INFO] image " + str(i) + " (3/3) ...")
+		# load the image, resize the image to be 32x32 pixels (ignoring
+		# aspect ratio), flatten the image into 32x32x3=3072 pixel image
+		# into a list, and store the image in the data list
+		image = cv2.imread(imagePath)
+		image = cv2.resize(image, (112, 112)).flatten()
+		data.append(image)
+		i = i + 1
+
+	# print("imageName:" + imageName + "  label:" + str(label_data['D1']))
+	# print(sorted(set(labels)))
+	# exit()
+	data = np.array(data, dtype="float") / 255.0
+	labels = np.array(labels)
+
+	savetxt('data.csv', data, delimiter=',')
+	savetxt('labels.csv', labels, delimiter=',')
 
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
@@ -31,54 +87,16 @@ ap.add_argument("-l", "--label-bin", required=True,
 # 	help="path to output accuracy/loss plot")
 args = vars(ap.parse_args())
 
-# initialize the data and labels
-print("[INFO] loading images...")
-data = []
-labels = []
-# grab the image paths and randomly shuffle them
-imagePaths = list(paths.list_images(args["dataset"]))
-random.seed(42)
-random.shuffle(imagePaths)
-# loop over the input images
+dataLoad(args)
 
-i = 1
-for imagePath in imagePaths:
-	print("[INFO] image " + str(i) + " (1/3) ...")
-	# load the image, resize the image to be 32x32 pixels (ignoring
-	# aspect ratio), flatten the image into 32x32x3=3072 pixel image
-	# into a list, and store the image in the data list
-	image = cv2.imread(imagePath)
-	image = cv2.resize(image, (32, 32)).flatten()
-	data.append(image)
-	# extract the class label from the image path and update the
-	# labels list
-	imageName = imagePath.split(os.path.sep)[6]
-	print("[INFO] image " + str(i) + " (2/3) ...")
-	# print(imagePath)
-	# print(imagePath.split(os.path.sep)[5])
-	# exit()
+loadedData = loadtxt('data.csv', delimiter=',')
+loadedLabels = loadtxt('labels.csv', delimiter=',')
 
-	# derive path to json file containing the ground truth features to predict
-	file_of_feature_to_predict = os.path.sep.join(["../results",
-												   "{}.json".format(os.path.splitext(imageName)[0])])
-
-	with open(file_of_feature_to_predict) as f:
-		label_data = json.load(f)
-	# derive the D1 ground truth feature and add it to label list
-	labels.append(label_data['D1'])
-	print("[INFO] image " + str(i) + " (3/3) ...")
-	i = i +1
-
-	# print("imageName:" + imageName + "  label:" + str(label_data['D1']))
-# print(sorted(set(labels)))
-# exit()
-data = np.array(data, dtype="float") / 255.0
-labels = np.array(labels)
 
 # partition the data into training and testing splits using 75% of
 # the data for training and the remaining 25% for testing
-(trainX, testX, trainY, testY) = train_test_split(data,
-	labels, test_size=0.25, random_state=42)
+(trainX, testX, trainY, testY) = train_test_split(loadedData,
+	loadedLabels, test_size=0.25, random_state=42)
 
 # convert the labels from integers to vectors (for 2-class, binary
 # classification you should use Keras' to_categorical function
@@ -90,8 +108,9 @@ testY = lb.transform(testY)
 
 # define the 3072-1024-512-3 architecture using Keras
 model = Sequential()
-model.add(Dense(1024, input_shape=(3072,), activation="sigmoid"))
-model.add(Dense(512, activation="sigmoid"))
+model.add(Dense(4704, input_shape=(37632,), activation="sigmoid"))
+model.add(Dense(1176, activation="sigmoid"))
+model.add(Dense(588, activation="sigmoid"))
 model.add(Dense(len(lb.classes_), activation="softmax"))
 
 # initialize our initial learning rate and # of epochs to train for
@@ -114,3 +133,4 @@ print("[INFO] evaluating network...")
 predictions = model.predict(x=testX, batch_size=32)
 print(classification_report(testY.argmax(axis=1),
 	predictions.argmax(axis=1)))
+
