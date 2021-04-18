@@ -10,6 +10,8 @@ from sklearn.model_selection import train_test_split
 import random
 from sklearn.decomposition import PCA
 
+from xgboost import XGBClassifier
+
 # derive the paths to the CSV file containing CNN feature data
 csvPath = os.path.sep.join([config.BASE_CSV_PATH,
 	"{}.csv".format(config.ALL_DATA_PATH)])
@@ -43,9 +45,10 @@ print("[INFO] loading data...")
 
 # print(np.shape(data))
 # exit()
-pca = PCA(n_components=48)
-pca.fit(data)
-newData = pca.transform(data)
+# pca = PCA(n_components=1028)
+# pca.fit(data)
+# newData = pca.transform(data)
+# newData = np.array(data)
 # print(newData.shape)
 # exit()
 
@@ -54,9 +57,22 @@ trainX, testX, trainY, testY = train_test_split(newData, labels, test_size=0.33,
 # le = pickle.loads(open(config.LE_PATH, "rb").read())
 from sklearn.naive_bayes import GaussianNB
 
-gnb = GaussianNB()
-predY = gnb.fit(trainX, trainY).predict(testX)
-print("Number of mislabeled points out of a total %d points : %d" % (np.shape(testX)[0], (testY != predY).sum()))
+# gnb = XGBClassifier()
+# predY = gnb.fit(trainX, trainY).predict(testX)
+# print("Number of mislabeled points out of a total %d points : %d" % (np.shape(testX)[0], (testY != predY).sum()))
+#
+
+
+model = XGBClassifier()
+model.fit(trainX, trainY)
+# make predictions for test data
+predY = model.predict(testX)
+predictions = [round(value) for value in predY]
+# evaluate predictions
+from sklearn.metrics import accuracy_score
+
+accuracy = accuracy_score(testY, predictions)
+print("Accuracy: %.2f%%" % (accuracy * 100.0))
 
 from sklearn.metrics import mean_absolute_error
 print("Mean absolute error : %d" % (mean_absolute_error(testY, predY)))
