@@ -26,7 +26,7 @@ p = os.path.sep.join([config.BASE_PATH, split])
 imagePaths = list(paths.list_images(p))
 # randomly shuffle the image paths and then extract the class
 # labels from the file paths
-random.shuffle(imagePaths)
+# random.shuffle(imagePaths)
 labels = [p.split(os.path.sep)[7] for p in imagePaths]
 
 # print(labels)
@@ -50,6 +50,7 @@ for (b, i) in enumerate(range(0, len(imagePaths), config.BATCH_SIZE)):
 	batchPaths = imagePaths[i:i + config.BATCH_SIZE]
 	# batchLabels = le.transform(labels[i:i + config.BATCH_SIZE])
 	batchImages = []
+	batchLabels = labels[i:i + config.BATCH_SIZE]
 
 	# loop over the images and labels in the current batch
 	for imagePath in batchPaths:
@@ -73,7 +74,7 @@ for (b, i) in enumerate(range(0, len(imagePaths), config.BATCH_SIZE)):
 	features = features.reshape((features.shape[0], 7 * 7 * 512))
 
 	# loop over the class labels and extracted features
-	for (label, vec) in zip(labels, features):
+	for (label, vec) in zip(batchLabels, features):
 		# construct a row that exists of the class label and
 		# extracted features
 		vec = ",".join([str(v) for v in vec])

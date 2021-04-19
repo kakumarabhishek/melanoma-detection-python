@@ -48,7 +48,7 @@ print("[INFO] loading data...")
 # pca = PCA(n_components=1028)
 # pca.fit(data)
 # newData = pca.transform(data)
-# newData = np.array(data)
+newData = np.array(data)
 # print(newData.shape)
 # exit()
 
