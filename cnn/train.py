@@ -16,6 +16,7 @@ from xgboost import XGBClassifier
 # save numpy array as csv file
 from numpy import savetxt
 
+# Used to decide whether to read the data from the file or genrate it
 READ_DATA = True
 newData = []
 labels = []
@@ -34,32 +35,23 @@ if not READ_DATA:
 		# derive path to json file containing the ground truth features to predict
 		file_of_feature_to_predict = os.path.sep.join([config.BASE_FEATURE_PATH,
 		"{}.json".format(os.path.splitext(imagePath)[0])])
-		file_of_feature_to_predict = file_of_feature_to_predict.replace("[", "")
-		file_of_feature_to_predict = file_of_feature_to_predict.replace("'", "")
+
+		#file_of_feature_to_predict = file_of_feature_to_predict.replace("[", "")
+		#file_of_feature_to_predict = file_of_feature_to_predict.replace("'", "")
 		with open(file_of_feature_to_predict) as f:
 			label_data = json.load(f)
 		# derive the D1 ground truth feature and add it to label list
 		labels.append(label_data['D1'])
-		# random.shuffle(labels)
-		# print(feature_data['D1'])
-		# exit()
-	
+
+		# remove the filename column from the features
 		features = np.array(row[1:], dtype="float")
 		data.append(features)
 	
 	# load the data from disk
 	print("[INFO] loading data...")
-	# (trainX, trainY) = load_data_split(trainingPath)
-	# (testX, testY) = load_data_split(testingPath)
-	
-	# print(np.shape(data))
-	# exit()
-	# pca = PCA(n_components=1028)
-	# pca.fit(data)
-	# newData = pca.transform(data)
+
 	newData = np.array(data)
 	labels = np.array(labels)
-
 
 	savetxt('data.csv', newData, delimiter=',')
 	savetxt('labels.csv', labels, delimiter=',')
@@ -86,8 +78,8 @@ print(newData.shape)
 print("[SPLITTING]...")
 trainX, testX, trainY, testY = train_test_split(newData, labels, test_size=0.33, random_state=8)
 # load the label encoder from disk
-# le = pickle.loads(open(config.LE_PATH, "rb").read())
-from sklearn.naive_bayes import GaussianNB
+
+# from sklearn.naive_bayes import GaussianNB
 
 # gnb = XGBClassifier()
 # predY = gnb.fit(trainX, trainY).predict(testX)
