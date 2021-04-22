@@ -12,46 +12,78 @@ from sklearn.decomposition import PCA
 
 from xgboost import XGBClassifier
 
-# derive the paths to the CSV file containing CNN feature data
-csvPath = os.path.sep.join([config.BASE_CSV_PATH,
-	"{}.csv".format(config.ALL_DATA_PATH)])
 
-data = []
+# save numpy array as csv file
+from numpy import savetxt
+
+READ_DATA = True
+newData = []
 labels = []
-
-for row in open(csvPath):
-	row = row.strip().split(",")
-	imagePath = row[0]
-
-	# derive path to json file containing the ground truth features to predict
-	file_of_feature_to_predict = os.path.sep.join([config.BASE_FEATURE_PATH,
-	"{}.json".format(os.path.splitext(imagePath)[0])])
-
-	with open(file_of_feature_to_predict) as f:
-		label_data = json.load(f)
-  	# derive the D1 ground truth feature and add it to label list
-	labels.append(label_data['D1'])
-	# random.shuffle(labels)
-	# print(feature_data['D1'])
+if not READ_DATA:
+	# derive the paths to the CSV file containing CNN feature data
+	csvPath = os.path.sep.join([config.BASE_CSV_PATH,
+		"{}.csv".format(config.ALL_DATA_PATH)])
+	
+	data = []
+	labels = []
+	
+	for row in open(csvPath):
+		row = row.strip().split(",")
+		imagePath = row[0]
+	
+		# derive path to json file containing the ground truth features to predict
+		file_of_feature_to_predict = os.path.sep.join([config.BASE_FEATURE_PATH,
+		"{}.json".format(os.path.splitext(imagePath)[0])])
+		file_of_feature_to_predict = file_of_feature_to_predict.replace("[", "")
+		file_of_feature_to_predict = file_of_feature_to_predict.replace("'", "")
+		with open(file_of_feature_to_predict) as f:
+			label_data = json.load(f)
+		# derive the D1 ground truth feature and add it to label list
+		labels.append(label_data['D1'])
+		# random.shuffle(labels)
+		# print(feature_data['D1'])
+		# exit()
+	
+		features = np.array(row[1:], dtype="float")
+		data.append(features)
+	
+	# load the data from disk
+	print("[INFO] loading data...")
+	# (trainX, trainY) = load_data_split(trainingPath)
+	# (testX, testY) = load_data_split(testingPath)
+	
+	# print(np.shape(data))
 	# exit()
+	# pca = PCA(n_components=1028)
+	# pca.fit(data)
+	# newData = pca.transform(data)
+	newData = np.array(data)
+	labels = np.array(labels)
 
-	features = np.array(row[1:], dtype="float")
-	data.append(features)
 
-# load the data from disk
-print("[INFO] loading data...")
-# (trainX, trainY) = load_data_split(trainingPath)
-# (testX, testY) = load_data_split(testingPath)
+	savetxt('data.csv', newData, delimiter=',')
+	savetxt('labels.csv', labels, delimiter=',')
 
-# print(np.shape(data))
-# exit()
-# pca = PCA(n_components=1028)
-# pca.fit(data)
-# newData = pca.transform(data)
-newData = np.array(data)
-# print(newData.shape)
-# exit()
 
+if READ_DATA:
+	print("[INFO] reading data...")
+
+	from numpy import genfromtxt
+	newData = genfromtxt('data.csv', delimiter=',')
+	labels = genfromtxt('labels.csv', delimiter=',')
+	print("[SHAPES]...")
+	print(newData.shape)
+	print(labels.shape)
+	# exit()
+	# print("[PCA]...")
+	# pca = PCA(n_components = 0.99)
+	# pca.fit(data)
+	# newData = pca.transform(data)
+	# savetxt('reducedData.csv', newData, delimiter=',')
+
+print("[SHAPE]...")
+print(newData.shape)
+print("[SPLITTING]...")
 trainX, testX, trainY, testY = train_test_split(newData, labels, test_size=0.33, random_state=8)
 # load the label encoder from disk
 # le = pickle.loads(open(config.LE_PATH, "rb").read())
@@ -62,15 +94,17 @@ from sklearn.naive_bayes import GaussianNB
 # print("Number of mislabeled points out of a total %d points : %d" % (np.shape(testX)[0], (testY != predY).sum()))
 #
 
-
+print("[MODEL]...")
 model = XGBClassifier()
 model.fit(trainX, trainY)
+print("[PRED]...")
 # make predictions for test data
 predY = model.predict(testX)
 predictions = [round(value) for value in predY]
 # evaluate predictions
 from sklearn.metrics import accuracy_score
 
+print("[RESULTS]...")
 accuracy = accuracy_score(testY, predictions)
 print("Accuracy: %.2f%%" % (accuracy * 100.0))
 
