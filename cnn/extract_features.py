@@ -4,12 +4,17 @@ from tensorflow.keras.applications import VGG16
 from tensorflow.keras.applications.vgg16 import preprocess_input
 from tensorflow.keras.preprocessing.image import img_to_array
 from tensorflow.keras.preprocessing.image import load_img
+from sklearn.model_selection import train_test_split
 from pyimagesearch import config
 from imutils import paths
 import numpy as np
 import pickle
 import random
 import os
+
+import time
+
+import json
 
 from skimage.color import rgb2gray
 
@@ -20,7 +25,9 @@ from keras.optimizers import Adam
 from keras.preprocessing.image import ImageDataGenerator
 from keras.callbacks import ReduceLROnPlateau, EarlyStopping
 from keras.utils.np_utils import to_categorical
+from keras import layers
 
+start = str(time.time())
 # load the network and initialize the label encoder
 print("[INFO] loading network...")
 pre_trained_model = VGG16(weights="imagenet", include_top=False, input_shape=(224, 224, 3))
@@ -30,7 +37,7 @@ for layer in pre_trained_model.layers:
     layer.trainable = False
 
 print(len(pre_trained_model.layers))
-exit()
+# exit()
 # flat1 = Flatten()(model.layers[-1].output)
 
 # model = Model(inputs=model.inputs, outputs=flat1)
@@ -80,7 +87,8 @@ for imagePath in imagePaths:
 	# add the image to the batch
 	batchImages.append(image)
 
-	imageName = imagePath.split(os.path.sep)[6]
+	imageName = imagePath.split(os.path.sep)[7]
+	# print(imageName)
 	file_of_feature_to_predict = os.path.sep.join(["../results",
 												   "{}.json".format(os.path.splitext(imageName)[0])])
 
@@ -97,17 +105,24 @@ print("[INFO] splitting data...")
 
 trainX, testX, trainY, testY = train_test_split(batchImages, labels, test_size=0.2, random_state=1)
 
-trainX, valX, trainY, valY = train_test_split(trainX, trainY, test_size=0.25, random_state=1)
+# trainX, valX, trainY, valY = train_test_split(trainX, trainY, test_size=0.25, random_state=1)
 
-print("trainX: " + trainX.shape + "   trainY: " +  trainY.shape)
-print("testX: " + testX.shape + "   testY: " +  testY.shape)
-print("valX: " + valX.shape + "   valY: " +  valY.shape)
+print("trainX: " + str(np.shape(trainX)) + "   trainY: " +  str(np.shape(trainY)))
+print("testX: " + str(np.shape(testX)) + "   testY: " +  str(np.shape(testY)))
+# print("valX: " + str(np.shape(valX)) + "   valY: " +  str(np.shape(valY)))
+
+le = LabelEncoder()
+le.fit(trainY)
 
 trainY = to_categorical(trainY)
-valY = to_categorical(valY)
+# valY = to_categorical(valY)
 testY = to_categorical(testY)
 
 print("[INFO] adding to network...")
+
+last_layer = pre_trained_model.get_layer('block5_pool')
+print('last layer output shape:', last_layer.output_shape)
+last_output = last_layer.output
 
 # Flatten the output layer to 1 dimension
 x = layers.GlobalMaxPooling2D()(last_output)
@@ -116,7 +131,7 @@ x = layers.Dense(512, activation='relu')(x)
 # Add a dropout rate of 0.5
 x = layers.Dropout(0.5)(x)
 # Add a final sigmoid layer for classification
-x = layers.Dense(len(lb.classes_), activation="softmax")(x)
+x = layers.Dense(len(le.classes_), activation="softmax")(x)
 
 model = Model(pre_trained_model.input, x)
 
@@ -126,48 +141,45 @@ model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['ac
 
 model.summary()
 
-print("[INFO] feature extraction 1/2...")
-train_datagen = ImageDataGenerator(rotation_range=60, width_shift_range=0.2, height_shift_range=0.2, shear_range=0.2, zoom_range=0.2, fill_mode='nearest')
+# print("[INFO] feature extraction 1/2...")
+# train_datagen = ImageDataGenerator(rotation_range=60, width_shift_range=0.2, height_shift_range=0.2, shear_range=0.2, zoom_range=0.2, fill_mode='nearest')
 
-train_datagen.fit(trainX)
+# train_datagen.fit(trainX)
 
-val_datagen = ImageDataGenerator()
-val_datagen.fit(valX)
+# val_datagen = ImageDataGenerator()
+# val_datagen.fit(valX)
 
-print("[INFO] feature extraction 2/2...")
-batch_size = 64
-epochs = 3
-history = model.fit_generator(train_datagen.flow(trainX,trainY, batch_size=batch_size),
-                              epochs = epochs, validation_data = val_datagen.flow(valX, valY),
-                              verbose = 1, steps_per_epoch=(trainX.shape[0] // batch_size), 
-                              validation_steps=(valX.shape[0] // batch_size))
+# print("[INFO] feature extraction 2/2...")
+# batch_size = 64
+# epochs = 3
+# history = model.fit_generator(train_datagen.flow(trainX,trainY, batch_size=batch_size),
+#                               epochs = epochs, validation_data = val_datagen.flow(valX, valY),
+#                               verbose = 1, steps_per_epoch=(trainX.shape[0] // batch_size), 
+#                               validation_steps=(valX.shape[0] // batch_size))
 
-for layer in model.layers[:15]:
-	layer.trainable = False
+# for layer in model.layers[:15]:
+# 	layer.trainable = False
 
-for layer in model.layers[15:]:
-	layer.trainable = True
+# for layer in model.layers[15:]:
+# 	layer.trainable = True
 
-print("[INFO] fine tune...")
-optimizer = Adam(lr=0.0001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
-model.compile(loss='categorical_crossentropy',
-              optimizer=optimizer,
-              metrics=['acc'])
+# print("[INFO] fine tune...")
+# optimizer = Adam(lr=0.0001, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0.0, amsgrad=False)
+# model.compile(loss='categorical_crossentropy',
+#               optimizer=optimizer,
+#               metrics=['acc'])
 
-model.summary()
+# model.summary()
 
 print("[INFO] learning rate...")
 learning_rate_reduction = ReduceLROnPlateau(monitor='val_acc', patience=3, verbose=1, factor=0.5, min_lr=0.000001, cooldown=3)
 
 batch_size = 64
 epochs = 30
-history = model.fit_generator(train_datagen.flow(trainX,trainY, batch_size=batch_size),
-                              epochs = epochs, validation_data = val_datagen.flow(valX, valY),
-                              verbose = 1, steps_per_epoch=(trainX.shape[0] // batch_size),
-                              validation_steps=(valX.shape[0] // batch_size), callbacks=[learning_rate_reduction])
+history = model.fit(trainX, trainY, batch_size=64, epochs=30, verbose = 1, steps_per_epoch=(np.shape(trainX)[0] // batch_size), callbacks=[learning_rate_reduction])
 
-loss_val, acc_val = model.evaluate(valX, valY, verbose=1)
-print("Validation: accuracy = %f  ;  loss_v = %f" % (acc_val, loss_val))
+# loss_val, acc_val = model.evaluate(valX, valY, verbose=1)
+# print("Validation: accuracy = %f  ;  loss_v = %f" % (acc_val, loss_val))
 
 loss_test, acc_test = model.evaluate(testX, testY, verbose=1)
 print("Test: accuracy = %f  ;  loss = %f" % (acc_test, loss_test))
