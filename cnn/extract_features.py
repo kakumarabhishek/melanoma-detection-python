@@ -27,7 +27,7 @@ from keras.callbacks import ReduceLROnPlateau, EarlyStopping
 from keras.utils.np_utils import to_categorical
 from keras import layers
 
-# load the network and initialize the label encoder
+# load the network
 print("[INFO] loading network...")
 pre_trained_model = VGG16(weights="imagenet", include_top=False, input_shape=(192, 256, 3))
 
@@ -35,14 +35,7 @@ for layer in pre_trained_model.layers:
     print(layer.name)
     layer.trainable = False
 
-print(len(pre_trained_model.layers))
-
-# flat1 = Flatten()(model.layers[-1].output)
-
-# model = Model(inputs=model.inputs, outputs=flat1)
-# summarize the model
-
-
+# Used to specifiy directory name "all"
 split = config.ALL_DATA_PATH
 
 print("[INFO] processing '{} split'...".format(split))
@@ -50,12 +43,6 @@ print("[INFO] processing '{} split'...".format(split))
 # get skin lesion image paths
 p = os.path.sep.join([config.BASE_PATH, split])
 imagePaths = list(paths.list_images(p))
-
-# open the output CSV file for writing
-csvPath = os.path.sep.join([config.BASE_CSV_PATH,
-	"{}.csv".format(split)])
-csv = open(csvPath, "w")
-
 
 imageData = []
 labels = []
@@ -82,7 +69,7 @@ for imagePath in imagePaths:
 	# add the image to the batch
 	imageData.append(image)
 
-	# get feaature we want to predict (D1)
+	# get feature we want to predict (D1)
 	imageName = imagePath.split(os.path.sep)[7]
 	file_of_feature_to_predict = os.path.sep.join(["../results",
 												   "{}.json".format(os.path.splitext(imageName)[0])])
@@ -91,15 +78,14 @@ for imagePath in imagePaths:
 		label_data = json.load(f)
 	# derive the D1 ground truth feature and add it to label list
 	d1 = label_data['D1']
-	# if d1 > 14:
-	# 	d1 = 1
-	# elif d1 < 15:
-	# 	d1 = 0
+	# data becomes sparse greater than 24, so set them as 25 to represent 'large' category
+	if d1 > 24:
+		d1 = 25
 	labels.append(d1)
 
 numLabels = len(set(labels))
 
-print("[INFO] encoding labels..")
+print("[INFO] encoding labels...")
 label_encoder = LabelEncoder()
 labels = label_encoder.fit_transform(labels)
 labels = to_categorical(labels)
@@ -127,9 +113,9 @@ last_output = last_layer.output
 # Flatten the output layer to 1 dimension
 x = layers.GlobalMaxPooling2D()(last_output)
 # Add a fully connected layer with 512 hidden units and ReLU activation
-x = layers.Dense(512, activation='relu')(x)
+# x = layers.Dense(512, activation='relu')(x)
 # Add a dropout rate of 0.5
-x = layers.Dropout(0.5)(x)
+# x = layers.Dropout(0.5)(x)
 # Add a final sigmoid layer for classification
 x = layers.Dense(numLabels, activation="softmax")(x)
 
